@@ -19,7 +19,7 @@ import java.util.Map;
 public class SiteWhereStreams {
 
     /** Common prefix for all SiteWhere topics */
-    public static final String TOPIC_COMMON_PREFIX = "${sitewhere.product}.${sitewhere.instance}.${sitewhere.tenant}.";
+    public static final String TOPIC_COMMON_PREFIX = "${sitewhere.product}.${sitewhere.instance}.tenant.${sitewhere.tenant}.";
 
     /** Prefix for streams supplied by event sources microservice */
     public static final String FA_EVENT_SOURCES_PREFIX = "event-sources-";

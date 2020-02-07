@@ -36,8 +36,10 @@ repositories {
 dependencies {
     compile 'org.apache.nifi:nifi-api:0.2.1'
     compile 'org.apache.nifi:nifi-processor-utils:0.2.1'
+    compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+    
 
-    nar 'org.apache.nifi:nifi-kafka-2-0-nar:1.11.1'
+    nar 'org.apache.nifi:nifi-kafka-2-0-nar:1.11.0'
 }
 
 // Create a Dockerfile based on Nifi image and include generated nar file in lib folder.

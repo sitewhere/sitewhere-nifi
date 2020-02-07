@@ -40,6 +40,10 @@ import org.apache.nifi.processor.ProcessSession;
 import org.apache.nifi.processor.Relationship;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sitewhere.nifi.controllers.SiteWhereContextService;
 
 @CapabilityDescription("Consumes SiteWhere events from well-known topics using an Apache Kafka 2.0 consumer.")
 @Tags({ "SiteWhere", "Stream", "Kafka", "Get", "Ingest", "Ingress", "Topic", "Consume", "2.0" })
@@ -57,10 +61,22 @@ import org.apache.nifi.processor.util.StandardValidators;
 	+ " For the list of available Kafka properties please refer to: http://kafka.apache.org/documentation.html#configuration. ", expressionLanguageScope = ExpressionLanguageScope.VARIABLE_REGISTRY)
 public class SiteWhereEvents extends AbstractProcessor {
 
+    /** Static logger instance */
+    @SuppressWarnings("unused")
+    private static Logger LOGGER = LoggerFactory.getLogger(SiteWhereEvents.class);
+
+    /** SiteWhere context service */
+    public static final PropertyDescriptor SITEWHERE_CONTEXT_SERVICE = new PropertyDescriptor.Builder()
+	    .name("SiteWhere Context Service")
+	    .description("Service which provides context such as instance id and tenant id for processors.")
+	    .required(true).identifiesControllerService(SiteWhereContextService.class).build();
+
+    /** Value for stream from event sources decoded events */
     public static final AllowableValue STREAM_EVENT_SOURCES_DECODED_EVENTS = new AllowableValue(
 	    "event-sources-decoded-events", "Event Sources - Decoded Events",
 	    "Events from event sources after payloads have been decoded.");
 
+    /** Choice of which stream to consume */
     public static final PropertyDescriptor SITEWHERE_STREAM = new PropertyDescriptor.Builder().name("sitewhere-stream")
 	    .displayName("SiteWhere Stream")
 	    .description("Chooses the SiteWhere event stream which will act as the source of events.").required(true)
@@ -153,6 +169,7 @@ public class SiteWhereEvents extends AbstractProcessor {
     static {
 	List<PropertyDescriptor> descriptors = new ArrayList<>();
 	descriptors.addAll(KafkaProcessorUtils.getCommonPropertyDescriptors());
+	descriptors.add(SITEWHERE_CONTEXT_SERVICE);
 	descriptors.add(SITEWHERE_STREAM);
 	descriptors.add(HONOR_TRANSACTIONS);
 	descriptors.add(AUTO_OFFSET_RESET);
@@ -233,4 +250,5 @@ public class SiteWhereEvents extends AbstractProcessor {
     protected SiteWhereKafka getKafka() {
 	return kafka;
     }
+
 }
