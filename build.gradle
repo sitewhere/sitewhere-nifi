@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+    	mavenCentral()
+        maven { url 'http://dl.bintray.com/sponiro/gradle-plugins' }
+    }
+    dependencies {
+        classpath group: 'de.fanero.gradle.plugin.nar', name: 'gradle-nar-plugin', version: '0.3'
+        classpath 'com.bmuschko:gradle-docker-plugin:4.3.0'
+    }
+}
+
+group = 'com.sitewhere'
+version = '3.0.0'
+
+ext['nifi.base.image'] = 'apache/nifi:1.11.0'
+
+apply plugin: 'java'
+apply plugin: 'de.fanero.gradle.plugin.nar'
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+docker {
+    url = (System.getenv("DOCKER_HOST") != null) ? System.getenv("DOCKER_HOST") : dockerProtocol + '://' + dockerHostname + ':' + dockerPort
+    registryCredentials {
+        url = registryUrl
+        username = registryUsername
+        password = registryPassword
+        email = registryEmail
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/libs-milestone" }
+}
+
+dependencies {
+    compile 'org.apache.nifi:nifi-api:0.2.1'
+    compile 'org.apache.nifi:nifi-processor-utils:0.2.1'
+
+    nar 'org.apache.nifi:nifi-kafka-2-0-nar:1.11.1'
+}
+
+// Create a Dockerfile based on Nifi image and include generated nar file in lib folder.
+task dockerFile(type: com.bmuschko.gradle.docker.tasks.image.Dockerfile, dependsOn: build) {
+    destFile = project.file('build/docker/Dockerfile')
+    from "${project.ext['nifi.base.image']}"
+		
+	// Copy generated nar.
+	copyFile("${project.name}-${project.version}.nar", "/opt/nifi/nifi-current/lib")
+	
+	// Start Nifi.	
+	entryPoint("../scripts/start.sh")
+}
+
+// Copy artifact to Docker input folder.
+task copyArtifactsToDocker(type: Copy, dependsOn: dockerFile) {
+    from "${buildDir}/libs/${project.name}-${project.version}.nar"
+    into 'build/docker'
+}
+
+// Build an image from the Dockerfile.
+task dockerImage(type: com.bmuschko.gradle.docker.tasks.image.DockerBuildImage, dependsOn: copyArtifactsToDocker) {
+    inputDir = project.file('build/docker')
+	tags = ["${dockerRepository}/sitewhere/${project.name}:${version}"]
+}
