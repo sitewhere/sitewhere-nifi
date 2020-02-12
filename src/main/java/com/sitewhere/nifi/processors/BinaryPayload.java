@@ -11,33 +11,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.sitewhere.nifi.controllers;
+package com.sitewhere.nifi.processors;
 
-import org.apache.nifi.controller.ControllerService;
+public class BinaryPayload {
 
-/**
- * Provides context information regarding SiteWhere instance and tenant.
- */
-public interface SiteWhereContextService extends ControllerService {
+    /** Payload key */
+    private String key;
 
-    /**
-     * Get configured instance id.
-     * 
-     * @return
-     */
-    String getInstanceId();
+    /** Payload content */
+    private byte[] payload;
 
-    /**
-     * Get configured tenant id.
-     * 
-     * @return
-     */
-    String getTenantId();
+    public String getKey() {
+	return key;
+    }
 
-    /**
-     * Get bootstrap servers for Kafka connection.
-     * 
-     * @return
-     */
-    String getKafkaBootstrapServers();
+    public void setKey(String key) {
+	this.key = key;
+    }
+
+    public byte[] getPayload() {
+	return payload;
+    }
+
+    public void setPayload(byte[] payload) {
+	this.payload = payload;
+    }
 }

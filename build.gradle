@@ -34,12 +34,16 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.nifi:nifi-api:0.2.1'
-    compile 'org.apache.nifi:nifi-processor-utils:0.2.1'
+    // Kafka streams.
+    compile group: 'org.apache.kafka', name: 'kafka-streams', version: '2.4.0'
+    
+    // Parser for string token replacement.
     compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
     
-
-    nar 'org.apache.nifi:nifi-kafka-2-0-nar:1.11.0'
+    // Logging.
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+	
+    nar 'org.apache.nifi:nifi-standard-services-api-nar:1.11.0'
 }
 
 // Create a Dockerfile based on Nifi image and include generated nar file in lib folder.

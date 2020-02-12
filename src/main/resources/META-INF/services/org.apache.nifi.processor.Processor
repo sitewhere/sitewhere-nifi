@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-com.sitewhere.nifi.processors.SiteWhereEvents
+com.sitewhere.nifi.processors.StreamSiteWhere

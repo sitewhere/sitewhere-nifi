@@ -16,7 +16,11 @@ package com.sitewhere.nifi.processors;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SiteWhereStreams {
+import org.apache.commons.text.StringSubstitutor;
+
+import com.sitewhere.nifi.controllers.SiteWhereContextService;
+
+public class StreamConstants {
 
     /** Common prefix for all SiteWhere topics */
     public static final String TOPIC_COMMON_PREFIX = "${sitewhere.product}.${sitewhere.instance}.tenant.${sitewhere.tenant}.";
@@ -39,10 +43,16 @@ public class SiteWhereStreams {
     /**
      * Get topic associated with the given value.
      * 
+     * @param contextService
      * @param value
      * @return
      */
-    public static String getTopic(String value) {
-	return TOPICS_BY_VALUE.get(value);
+    public static String getTopic(SiteWhereContextService contextService, String value) {
+	String topicWithPlaceholders = TOPICS_BY_VALUE.get(value);
+	if (topicWithPlaceholders == null) {
+	    return null;
+	}
+	SiteWhereStringLookup lookup = new SiteWhereStringLookup(contextService);
+	return new StringSubstitutor(lookup).replace(topicWithPlaceholders);
     }
 }

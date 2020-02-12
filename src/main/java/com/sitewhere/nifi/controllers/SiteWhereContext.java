@@ -41,6 +41,13 @@ public class SiteWhereContext extends AbstractControllerService implements SiteW
 	    .displayName("Tenant Id").description("SiteWhere tenant id.").defaultValue("default")
 	    .addValidator(StandardValidators.NON_EMPTY_VALIDATOR).build();
 
+    /** SiteWhere Kafka bootstrap servers */
+    public static final PropertyDescriptor KAFKA_BOOTSTRAP_SERVERS = new PropertyDescriptor.Builder()
+	    .name("kafka-bootstrap-servers").displayName("Kafka Bootstrap Servers")
+	    .description("List of bootstrap servers for Kafka connection.")
+	    .defaultValue("sitewhere-kafka-kafka-bootstrap:9092").addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+	    .build();
+
     /** List of service properties */
     private static final List<PropertyDescriptor> SERVICE_PROPERTIES;
 
@@ -48,6 +55,7 @@ public class SiteWhereContext extends AbstractControllerService implements SiteW
 	final List<PropertyDescriptor> props = new ArrayList<>();
 	props.add(INSTANCE_ID);
 	props.add(TENANT_ID);
+	props.add(KAFKA_BOOTSTRAP_SERVERS);
 	SERVICE_PROPERTIES = Collections.unmodifiableList(props);
     }
 
@@ -65,7 +73,7 @@ public class SiteWhereContext extends AbstractControllerService implements SiteW
      */
     @Override
     public String getInstanceId() {
-	return getConfigurationContext().getProperty(INSTANCE_ID).getValue();
+	return getProperty(INSTANCE_ID).getValue();
     }
 
     /*
@@ -73,6 +81,15 @@ public class SiteWhereContext extends AbstractControllerService implements SiteW
      */
     @Override
     public String getTenantId() {
-	return getConfigurationContext().getProperty(TENANT_ID).getValue();
+	return getProperty(TENANT_ID).getValue();
+    }
+
+    /*
+     * @see com.sitewhere.nifi.controllers.SiteWhereContextService#
+     * getKafkaBootstrapServers()
+     */
+    @Override
+    public String getKafkaBootstrapServers() {
+	return getProperty(KAFKA_BOOTSTRAP_SERVERS).getValue();
     }
 }
